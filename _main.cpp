@@ -1,6 +1,7 @@
 #include <iostream>
 #include <ctime>
 #include <vector>
+#include <list>
 
 using namespace std;
 
@@ -20,6 +21,7 @@ class BinTree
 {
 private:
     Uzel *root;
+    int count_uzel = 0;
 public:
     BinTree(){root = NULL;}//пустое дерево
     BinTree(int n);
@@ -40,15 +42,19 @@ public:
     
     void add(int k);
     void del(int k);
+    void _del(int k);
 
     int min();
     int min_r(Uzel *q);
 
     int KRL(int *a);
+    void LRK(Uzel* r);
+    void LRK();
     void inarray(Uzel* q, int* a,int& k);
     
     int max();
     void print_level(Uzel* t, int k);
+    list<Uzel*> tree_walk();
     //del_elem, два обхода(по уровню и глубины)
     //два обхода(по уровню и глубины)
 
@@ -56,6 +62,57 @@ public:
     void print(ostream& os, int, Uzel*) const;
     friend ostream & operator << (ostream&, const BinTree&);
 };
+
+
+list<Uzel*> BinTree::tree_walk(){
+    list<Uzel*> r;
+    r.push_back(root);
+    list<Uzel*>::iterator h = r.begin();
+    while(h != r.end()){
+        if((*h) -> left) r.push_back((*h) -> left);
+        if((*h) -> right) r.push_back((*h) -> right);
+        cout << (*h) -> key << " ";
+        h++;
+    }
+    return r;
+}
+
+
+void BinTree::LRK(){
+    LRK(root);
+}
+
+void BinTree::LRK(Uzel* r){
+    if(r -> left) LRK(r -> left);
+    cout << r -> key << " ";
+    if(r -> right) LRK(r -> right);
+}
+
+void BinTree::_del(int k){
+    Uzel* curr = root;
+    Uzel* parent = NULL;
+    while (curr && curr -> key != k){
+        parent = curr;
+        if(curr -> key > k){
+            curr = curr -> left;
+        }else{
+            curr = curr -> right;
+        }
+    }
+    if(!curr) return;
+    if(curr -> left == NULL){
+        if(parent && parent  -> left == curr) parent -> left = curr -> right;
+        if(parent && parent  -> right == curr) parent -> right = curr -> right;
+        delete curr;
+        return;
+    } 
+    if(curr -> right == NULL){
+        if(parent && parent -> left == curr) parent -> left = curr -> left;
+        if(parent && parent -> right == curr) parent -> right = curr -> left;
+        delete curr;
+        return;
+    }
+}
 
 int BinTree::KRL(int *a){
     int k = 0;
@@ -68,45 +125,6 @@ void BinTree::inarray(Uzel*q, int*a, int&k){
     a[k++] = q -> key;
     inarray(q -> right, a, k);
     inarray(q -> left, a, k);
-}
-
-void BinTree::del(int k){
-    Uzel* p;
-    Uzel* q = root;
-    while(q != NULL && q -> key != k){
-        p = q;
-        if(k < q -> key) q = q -> left;
-        if(k > q -> key) q = q -> right;
-    }
-    if(q == NULL) return;
-    if(q -> left == NULL && q -> right == NULL){
-        if(p != NULL){
-            if(p -> left == q) p -> left = NULL;
-            else p -> right = NULL;
-        }   
-        else root = NULL;
-        delete q;
-        return;
-    }
-    if(q -> left != NULL && q -> right != NULL){
-        Uzel* change_p = q;
-        Uzel *change = q -> left;
-        while(change -> right){
-            change_p = change;
-            change = change -> right;
-        }
-        q -> key = change -> key;
-        if(change_p == q) q -> left = change -> left;
-        else change_p -> right= change -> left;
-        delete change;
-        return;
-    }
-    Uzel* change;
-    if (q -> left != NULL) change = q -> left;
-    else change = q -> right;
-    if(k < p -> key) p -> left = change;
-    else p -> right = change;
-    delete q;
 }
     
 BinTree::BinTree(const vector<int> &arr){
@@ -356,7 +374,7 @@ ostream& operator<<(ostream& out, const BinTree& BT) {
 
 int main(int argc, char const *argv[])
 {
-    srand(time(0));
+    //srand(time(0));
 
     // BinTree A(10), B;
     
@@ -377,17 +395,31 @@ int main(int argc, char const *argv[])
     // cout << "___________________________________________" << endl;
     // cout << A; cout << endl;
     
-     int N = 10, _A[N]{8, 11, 15, 19, 7, 2, 13, 12, 10, 18};
+    // BinTree A(_A, N);
+    // A.add(15);
+    // cout << A.min() << endl;
+    // cout << A.max() << endl;
+    // if(A.find_k(5)) cout << "1" << endl;
+    // else cout << "0" << endl;
+    // cout << A; cout << endl;
+    // cout << "___________________________________________" << endl;
 
-    BinTree A(_A, N);
-    A.add(15);
-    cout << A.min() << endl;
-    cout << A.max() << endl;
-    if(A.find_k(5)) cout << "1" << endl;
-    else cout << "0" << endl;
+    //int N = 10, _A[N]{8, 11, 15, 19, 7, 2, 13, 12, 10, 18};
+
+    BinTree A(8);
+
     cout << A; cout << endl;
-    cout << "___________________________________________" << endl;
+    cout << "_________________________" << endl;
+    A.LRK();
+    // A._del(58);
+    // cout << "_________________________" << endl;
+    //cout << A; cout << endl;
 
+    //cout << "_________________________" << endl;
+    //cout << A.KRL(_A); cout << endl;
+    //cout << A; cout << endl;
+    cout << endl;
+    A.tree_walk();
 
     return 0;
 }
