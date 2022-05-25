@@ -63,7 +63,6 @@ public:
     friend ostream & operator << (ostream&, const BinTree&);
 };
 
-
 list<Uzel*> BinTree::tree_walk(){
     list<Uzel*> r;
     r.push_back(root);
@@ -112,6 +111,26 @@ void BinTree::_del(int k){
         delete curr;
         return;
     }
+
+    Uzel *temp = curr -> right;
+    Uzel *r = NULL;
+    if(temp -> left == NULL){
+        curr -> key = temp -> key;
+        curr -> right = temp -> right;
+        delete temp;
+        return;
+    }else{
+        while(temp -> left != NULL){
+            r = temp;
+            temp = temp -> left;
+        }
+        curr -> key = temp -> key;
+        r -> left = temp -> right;
+        delete temp;
+        return;
+    }
+
+
 }
 
 int BinTree::KRL(int *a){
@@ -404,22 +423,22 @@ int main(int argc, char const *argv[])
     // cout << A; cout << endl;
     // cout << "___________________________________________" << endl;
 
-    //int N = 10, _A[N]{8, 11, 15, 19, 7, 2, 13, 12, 10, 18};
+    int N = 12, _A[N]{46, 82, 56, 57, 93, 90, 95, 30, 35, 17, 15, 26};
 
-    BinTree A(8);
+    BinTree A(_A, N);
 
     cout << A; cout << endl;
     cout << "_________________________" << endl;
-    A.LRK();
-    // A._del(58);
-    // cout << "_________________________" << endl;
-    //cout << A; cout << endl;
+    A._del(82);
+    //A.LRK();
+    cout << "_________________________" << endl;
+    cout << A; cout << endl;
 
     //cout << "_________________________" << endl;
     //cout << A.KRL(_A); cout << endl;
     //cout << A; cout << endl;
-    cout << endl;
-    A.tree_walk();
+    //cout << endl;
+    //A.tree_walk();
 
     return 0;
 }
